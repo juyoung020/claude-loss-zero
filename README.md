@@ -90,22 +90,7 @@ The harness encodes this as eight always-on rules and backs the two most-skipped
 
 ## How it works
 
-```mermaid
-flowchart TD
-    A([Session starts]) -->|SessionStart hook<br/>injects RULES.md| B[Claude works under the rules]
-    B --> C{Tempted to<br/>compromise?}
-    C -- no --> B
-    C -- yes --> D["Log it: trial-and-error.md<br/>- [try N] approach → cause"]
-    D --> E["Next attempt removes that cause<br/>(gradient descent → loss = 0)"]
-    E --> C
-    B --> F{Claude tries to<br/>end the turn}
-    F -->|Stop hook reads<br/>trial-and-error.md| G{3+ unresolved<br/>tries?}
-    G -- yes --> H["⛔ Stop blocked → delegate to a fresh agent<br/>goal + invariants only, method open"]
-    H --> B
-    G -- no --> I{RESOLVED?<br/>big-tech grade, judged<br/>by a separate agent}
-    I -- no --> B
-    I -- yes --> J([✅ Loop closed])
-```
+![How Loss-Zero works: Claude works under always-on rules; failed tries are logged to trial-and-error.md and reduced by gradient descent; the Stop hook blocks the turn at 3 unresolved tries and forces delegation; "done" only counts at big-tech grade.](assets/how-it-works.png)
 
 **1. Always-on rules (SessionStart hook).**
 Every session, the plugin injects [`RULES.md`](plugins/loss-zero/rules/RULES.md) as context — the equivalent of a global `CLAUDE.md`, but packaged so it travels with the plugin.

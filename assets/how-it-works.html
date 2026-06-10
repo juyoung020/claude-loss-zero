@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #eef1f4; padding: 28px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+  #card { width: 940px; background: #fbfcfd; border: 1px solid #e3e8ee; border-radius: 16px; padding: 30px 32px 26px; }
+
+  .head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 26px; }
+  .kicker { font-size: 11px; letter-spacing: 2px; color: #6b7785; font-weight: 600; }
+  .title { font-size: 23px; font-weight: 800; color: #1f2328; margin-top: 7px; letter-spacing: -0.2px; }
+  .title .accent { color: #119a8b; }
+  .legend { font-size: 12px; color: #6b7785; display: grid; gap: 8px; padding-top: 4px; }
+  .legend div { display: flex; align-items: center; gap: 8px; }
+  .ln { width: 30px; height: 0; border-top: 2.5px solid #119a8b; }
+  .ln.dash { border-top: 2.5px dashed #d97757; }
+
+  .row { display: flex; align-items: stretch; gap: 0; }
+  .box { flex: 1; background: #fff; border: 1px solid #e3e8ee; border-radius: 11px; padding: 16px 17px; }
+  .box .lbl { font-size: 10.5px; letter-spacing: 1.2px; color: #6b7785; font-weight: 600; }
+  .box h3 { font-size: 16px; color: #1f2328; margin-top: 8px; font-weight: 700; }
+  .box p { font-size: 12.5px; color: #5a6570; line-height: 1.5; margin-top: 8px; }
+  .pill { display: inline-block; margin-top: 12px; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 11px; color: #475569; background: #eef2f5; border: 1px solid #dce3ea; border-radius: 20px; padding: 4px 11px; }
+  .code { margin-top: 11px; background: #1f2328; border-radius: 7px; padding: 10px 12px; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 11px; line-height: 1.55; color: #d1d9e0; }
+  .bul { font-size: 12.5px; color: #5a6570; line-height: 1.6; margin-top: 9px; }
+  .bul b { color: #1f2328; font-weight: 600; }
+  .closed { margin-top: 12px; font-size: 11.5px; color: #119a8b; font-weight: 600; }
+
+  .conn { width: 96px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; }
+  .conn .tag { font-size: 11px; color: #119a8b; font-weight: 600; white-space: nowrap; }
+  .arrow { width: 100%; height: 0; border-top: 2.5px solid #119a8b; position: relative; }
+  .arrow::after { content: ""; position: absolute; right: -1px; top: -5px; border-left: 8px solid #119a8b; border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+
+  .loop { margin-top: 16px; border-top: 2px dashed #e3c3b4; padding-top: 13px; display: flex; align-items: center; gap: 9px; }
+  .loop .ic { color: #d97757; font-size: 15px; }
+  .loop span { font-size: 12.5px; color: #c05f3c; }
+  .loop b { font-weight: 700; }
+</style>
+</head>
+<body>
+  <div id="card">
+    <div class="head">
+      <div>
+        <div class="kicker">HOW IT WORKS</div>
+        <div class="title">From &ldquo;good enough&rdquo; to <span class="accent">loss = 0</span></div>
+      </div>
+      <div class="legend">
+        <div><span class="ln"></span> normal turn</div>
+        <div><span class="ln dash"></span> when blocked</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="box">
+        <div class="lbl">YOUR SESSION</div>
+        <h3>Claude works</h3>
+        <p>Always-on working rules load at the start of every turn.</p>
+        <span class="pill">SessionStart hook</span>
+      </div>
+
+      <div class="conn">
+        <div class="tag">hits a wall</div>
+        <div class="arrow"></div>
+      </div>
+
+      <div class="box">
+        <div class="lbl">TRIAL-AND-ERROR.MD</div>
+        <h3>Log each failed try</h3>
+        <div class="code">- [try 1] A &rarr; cause<br>- [try 2] B &rarr; cause</div>
+        <p>Each next try removes that cause &mdash; gradient descent toward the goal, never lowering it.</p>
+      </div>
+
+      <div class="conn">
+        <div class="tag">on stop</div>
+        <div class="arrow"></div>
+      </div>
+
+      <div class="box">
+        <div class="lbl">THE STOP HOOK</div>
+        <h3>Won&rsquo;t let it stop early</h3>
+        <div class="bul"><b>3 unresolved tries</b> &rarr; block the turn</div>
+        <div class="bul">delegate to a <b>fresh agent</b> (goal only)</div>
+        <div class="bul">&ldquo;done&rdquo; only at <b>big-tech grade</b></div>
+        <div class="closed">clears the bar &rarr; &#10003; loop closed</div>
+      </div>
+    </div>
+
+    <div class="loop">
+      <span class="ic">&#10227;</span>
+      <span><b>When blocked:</b> hand the goal &amp; invariants to a fresh agent (method left open), then loop back &mdash; until it&rsquo;s actually done.</span>
+    </div>
+  </div>
+</body>
+</html>
