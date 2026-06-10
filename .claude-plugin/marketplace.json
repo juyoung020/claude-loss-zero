@@ -1,0 +1,17 @@
+{
+  "name": "loss-zero",
+  "owner": {
+    "name": "주영",
+    "url": "https://github.com/juyoung020"
+  },
+  "metadata": {
+    "description": "A discipline harness for Claude Code that fights AI overconfidence."
+  },
+  "plugins": [
+    {
+      "name": "loss-zero",
+      "source": "./plugins/loss-zero",
+      "description": "Always-on working rules + a Stop hook that forces complete, closed-loop solutions instead of premature 'done'."
+    }
+  ]
+}

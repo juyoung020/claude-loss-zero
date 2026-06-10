@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "loss-zero",
+  "displayName": "Loss-Zero",
+  "version": "0.1.0",
+  "description": "Don't let Claude stop at 'good enough.' Always-on rules + a Stop hook that drives every task to loss=0 — complete, closed-loop, big-tech grade.",
+  "author": {
+    "name": "주영",
+    "url": "https://github.com/juyoung020"
+  },
+  "homepage": "https://github.com/juyoung020/claude-loss-zero",
+  "repository": "https://github.com/juyoung020/claude-loss-zero",
+  "license": "MIT",
+  "keywords": ["claude-code", "hooks", "discipline", "closed-loop", "overconfidence", "agent"],
+  "hooks": "./hooks/hooks.json"
+}
