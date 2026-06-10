@@ -4,7 +4,40 @@
 
 It ships as a Claude Code **plugin**: always-on working rules plus a `Stop` hook that won't let a half-solved problem be called "done." The name is the goal — drive every task to **loss = 0**.
 
+[![Claude Code](https://img.shields.io/badge/Claude_Code-plugin-d97757)](https://github.com/juyoung020/claude-loss-zero)
+![code](https://img.shields.io/badge/core-~100_lines-1f6feb)
+![dependencies](https://img.shields.io/badge/dependencies-0-3fb950)
+![cross-platform](https://img.shields.io/badge/cross--platform-Windows_macOS_Linux-8957e5)
+![license](https://img.shields.io/badge/license-MIT-green)
+
+> ⚡ **The entire harness is ~100 lines of dependency-free JavaScript** (≈70 without comments) — one `Stop` hook and a rules file. No framework, no bloat, no telemetry.
+
 ---
+
+## Install
+
+**Requirements:** Claude Code, and **Node.js** on your `PATH` (the hooks are plain Node, zero dependencies — Windows, macOS, Linux).
+
+```bash
+# 1. Add this repo as a plugin marketplace
+/plugin marketplace add juyoung020/claude-loss-zero
+
+# 2. Install the plugin
+/plugin install loss-zero@loss-zero
+```
+
+Restart Claude Code (or `/reload-plugins`) and you're done — the rules load every session and the `Stop` hook is live. Update later with `/plugin marketplace update loss-zero`.
+
+<details>
+<summary><b>Prefer no plugin? Manual install</b></summary>
+
+1. Copy `plugins/loss-zero/scripts/` somewhere stable.
+2. Add a `Stop` hook in `~/.claude/settings.json` pointing at `check_loop_closed.js`:
+   ```json
+   { "hooks": { "Stop": [ { "hooks": [ { "type": "command", "command": "node \"/abs/path/to/check_loop_closed.js\"" } ] } ] } }
+   ```
+3. Paste the contents of `RULES.md` into your `~/.claude/CLAUDE.md`.
+</details>
 
 ## The problem it solves
 
@@ -59,38 +92,7 @@ When Claude tries to end its turn, [`check_loop_closed.js`](plugins/loss-zero/sc
 **4. "Done" means big-tech grade.**
 `RESOLVED` is only legitimate if a **Google / Microsoft / Anthropic-grade review** — run by an *independent* agent, not Claude's own self-assessment — would pass it. Below that bar, it's still an open task. (With a guardrail against the opposite failure: don't gold-plate or inflate the scope.)
 
-## Install
-
-**Requirements:** Claude Code, and **Node.js** on your `PATH` (the hooks are plain Node, no dependencies — works on Windows, macOS, Linux).
-
-```bash
-# 1. Add this repo as a plugin marketplace
-/plugin marketplace add juyoung020/claude-loss-zero
-
-# 2. Install the plugin
-/plugin install loss-zero@loss-zero
-```
-
-Restart Claude Code (or `/reload-plugins`). That's it — the rules load every session and the Stop hook is live.
-
-To update later: `/plugin marketplace update loss-zero`.
-
-### Manual install (no plugin)
-
-If you'd rather wire it in by hand:
-
-1. Copy `plugins/loss-zero/scripts/` somewhere stable.
-2. Add a `Stop` hook in your `~/.claude/settings.json` pointing at `check_loop_closed.js`:
-   ```json
-   {
-     "hooks": {
-       "Stop": [
-         { "hooks": [ { "type": "command", "command": "node \"/abs/path/to/check_loop_closed.js\"" } ] }
-       ]
-     }
-   }
-   ```
-3. Paste the contents of `RULES.md` into your `~/.claude/CLAUDE.md`.
+This bar is a borrowed trick. In Stable Diffusion, appending *"masterpiece, best quality"* to a prompt visibly lifts the output — the model reaches higher simply because you anchored it higher. Loss-Zero does the same to *engineering judgment*: anchor the definition of "done" to elite work, and the default verdict flips from a hopeful **"good enough"** to a skeptical **"not yet."**
 
 ## Using it
 
