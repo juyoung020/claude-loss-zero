@@ -4,3 +4,5 @@ Thumbs.db
 *.log
 trial-and-error.md
 시행착오.md
+# …but keep the bundled example
+!examples/trial-and-error.md

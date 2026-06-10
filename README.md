@@ -39,6 +39,29 @@ Restart Claude Code (or `/reload-plugins`) and you're done — the rules load ev
 3. Paste the contents of `RULES.md` into your `~/.claude/CLAUDE.md`.
 </details>
 
+## What it looks like
+
+*Illustrative — the moment the `Stop` hook refuses a premature "done":*
+
+```console
+You ▸ refactor the auth module and make the whole suite pass
+
+Claude ▸ (3 approaches tried, each logged to trial-and-error.md)
+         The token-refresh mock still fails. I'll note it as a known
+         limitation and wrap up here.
+
+  ⛔ Stop hook ▸ trial-and-error log has 3 failed attempts and no
+     resolution marker. Stop self-overestimating and DELEGATE now —
+     goal + invariants only, method open. "RESOLVED" counts only if an
+     Anthropic-grade review, run by a separate agent, would pass it.
+
+Claude ▸ Understood — handing it to a fresh agent with just the goal…
+         Independent agent found a refresh race; fix applied, suite green.
+         ✅ RESOLVED (verified by an independent review pass)
+```
+
+Without the hook, that turn ends at "known limitation." With it, the loop closes.
+
 ## The problem it solves
 
 LLMs are overconfident about themselves. In practice that shows up as:
@@ -66,6 +89,23 @@ Concretely:
 The harness encodes this as eight always-on rules and backs the two most-skipped ones (delegation + closing the loop) with a hook that the model **cannot overconfidence its way past**, because the trigger is a number in a file, not a feeling.
 
 ## How it works
+
+```mermaid
+flowchart TD
+    A([Session starts]) -->|SessionStart hook<br/>injects RULES.md| B[Claude works under the rules]
+    B --> C{Tempted to<br/>compromise?}
+    C -- no --> B
+    C -- yes --> D["Log it: trial-and-error.md<br/>- [try N] approach → cause"]
+    D --> E["Next attempt removes that cause<br/>(gradient descent → loss = 0)"]
+    E --> C
+    B --> F{Claude tries to<br/>end the turn}
+    F -->|Stop hook reads<br/>trial-and-error.md| G{3+ unresolved<br/>tries?}
+    G -- yes --> H["⛔ Stop blocked → delegate to a fresh agent<br/>goal + invariants only, method open"]
+    H --> B
+    G -- no --> I{RESOLVED?<br/>big-tech grade, judged<br/>by a separate agent}
+    I -- no --> B
+    I -- yes --> J([✅ Loop closed])
+```
 
 **1. Always-on rules (SessionStart hook).**
 Every session, the plugin injects [`RULES.md`](plugins/loss-zero/rules/RULES.md) as context — the equivalent of a global `CLAUDE.md`, but packaged so it travels with the plugin.
@@ -113,6 +153,46 @@ The log file may be named `trial-and-error.md` or `시행착오.md`; markers and
 ## Why a hook, not just a prompt?
 
 A prompt rule ("please don't stop early") is itself subject to the overconfidence it's trying to fix — the model reads it and still thinks it's done. The hook moves the decision **out of the model's head and into a file check**: three lines exist, or they don't. That's the whole trick — and it's why the trigger is a count, not a judgment.
+
+## The ideas behind it
+
+Loss-Zero is small, but it borrows from a few big ideas:
+
+- **Closed-loop control.** A harness without feedback drifts. Every turn ends with a verification step — the loop is *closed*, not fired-and-forgotten.
+- **Gradient descent on a goal.** Treat the gap between "current result" and "the real goal" as a loss. Each logged failure is a gradient step: find the cause, remove it, repeat — converge *to* the goal instead of lowering it.
+- **Objective triggers over self-report.** An overconfident model can't be trusted to judge "am I stuck?" So the trigger is a count in a file, not a feeling. The decision lives outside the model's head.
+- **Open-prompt delegation.** When a context is polluted, hard-prompting a sub-agent just transplants the same blind spot. Hand over the *goal and invariants only* — leave the method open so a fresh mind can break the frame.
+- **Quality anchoring.** Like *"masterpiece, best quality"* in image prompts, anchoring "done" to big-tech-grade review boosts the bar — and flips the default verdict from optimistic to skeptical.
+
+## FAQ
+
+**Does this slow down simple tasks?**
+No. The log and the gate only engage when Claude is actually compromising or looping. Trivial tasks never create `trial-and-error.md`, so the hook exits instantly.
+
+**Won't it get stuck in an infinite block loop?**
+No. The block is a single nudge with a clear exit: resolve it, or mark the log `RESOLVED` / `DELEGATED` / `NEEDS-USER`. The hook also fails open on any error.
+
+**I already have a `CLAUDE.md`. Will it conflict?**
+The rules are additive. Keep both, or trim overlaps — `RULES.md` is plain text you can edit.
+
+**What does it cost?**
+The rules (~50 lines) are injected once per session as context. The hook runs locally and sends nothing anywhere — no telemetry, no network.
+
+**No Node.js installed?**
+Then the hook simply does nothing (fail-open) — your sessions are never broken. Install Node to switch the enforcement on.
+
+## Roadmap
+
+- [ ] A real demo GIF of a live session
+- [ ] Submit to the official Claude Code plugin marketplace
+- [ ] Configurable threshold / log name via env
+- [ ] Per-project rule overlays
+
+Contributions and ideas welcome — open an issue or PR.
+
+---
+
+⭐ **If this resonates, a star helps other people find it.**
 
 ## License
 
